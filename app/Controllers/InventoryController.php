@@ -44,9 +44,6 @@ class InventoryController extends Controller
                   ->orLike('products.description', $search)
                   ->groupEnd();
         }
-                  ->orLike('products.generic_name', $search)
-                  ->orLike('products.description', $search);
-        }
 
         if (!empty($filterSkuPrefix)) {
             $query->like('products.sku', $filterSkuPrefix, 'after');

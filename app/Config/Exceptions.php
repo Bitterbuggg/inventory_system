@@ -3,10 +3,10 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
-use CodeIgniter\Debug\ExceptionHandler;
 use CodeIgniter\Debug\ExceptionHandlerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
+use App\Exceptions\CustomExceptionHandler;
 
 /**
  * Setup how the exception handler works.
@@ -56,7 +56,14 @@ class Exceptions extends BaseConfig
      *
      * @var list<string>
      */
-    public array $sensitiveDataInTrace = [];
+    public array $sensitiveDataInTrace = [
+        'server/db/password',
+        'server/auth_password',
+        'password',
+        'secret',
+        'token',
+        'api_key',
+    ];
 
     /**
      * --------------------------------------------------------------------------
@@ -101,6 +108,6 @@ class Exceptions extends BaseConfig
      */
     public function handler(int $statusCode, Throwable $exception): ExceptionHandlerInterface
     {
-        return new ExceptionHandler($this);
+        return new CustomExceptionHandler($this);
     }
 }
