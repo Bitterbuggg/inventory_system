@@ -101,7 +101,19 @@ composer test
 Added:
 
 - Unit tests: `tests/unit/Services/AuthServiceTest.php`
+- Unit tests: `tests/unit/Services/PurchaseWorkflowServiceTest.php`
 - Integration tests: `tests/integration/Controllers/AuthRoutesTest.php`
+
+## Workflow API (Backend Skeleton)
+
+Authenticated role scope: `Admin`, `Employee`.
+
+- `POST /api/workflow/purchase-requests`
+- `POST /api/workflow/purchase-requests/{id}/approve`
+- `POST /api/workflow/purchase-orders`
+- `POST /api/workflow/po-requests`
+- `POST /api/workflow/receivings/convert`
+- `POST /api/workflow/issuances`
 
 ## Optimization Plan (Early)
 

@@ -27,4 +27,13 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 	$routes->group('tech', ['filter' => 'role:IT Dev/Staff'], static function (RouteCollection $routes): void {
 		$routes->get('overview', 'DashboardController::index');
 	});
+
+	$routes->group('api/workflow', ['filter' => 'role:Admin,Employee'], static function (RouteCollection $routes): void {
+		$routes->post('purchase-requests', 'PurchaseWorkflowController::createPurchaseRequest');
+		$routes->post('purchase-requests/(:num)/approve', 'PurchaseWorkflowController::approvePurchaseRequest/$1');
+		$routes->post('purchase-orders', 'PurchaseWorkflowController::createPurchaseOrder');
+		$routes->post('po-requests', 'PurchaseWorkflowController::createPoRequest');
+		$routes->post('receivings/convert', 'PurchaseWorkflowController::convertReceiving');
+		$routes->post('issuances', 'PurchaseWorkflowController::issueInventory');
+	});
 });

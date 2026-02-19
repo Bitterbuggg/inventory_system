@@ -15,6 +15,7 @@ class PurchaseWorkflowService
 
     public function createPurchaseRequest(array $requestData, array $items): int
     {
+        $requestData['request_no'] = $requestData['request_no'] ?? $this->generateReference('PR');
         $requestData['status'] = $requestData['status'] ?? 'draft';
         $requestData['requested_at'] = $requestData['requested_at'] ?? date('Y-m-d H:i:s');
 
@@ -38,6 +39,7 @@ class PurchaseWorkflowService
 
     public function createPurchaseOrder(array $orderData, array $items): int
     {
+        $orderData['po_no'] = $orderData['po_no'] ?? $this->generateReference('PO');
         $orderData['status'] = $orderData['status'] ?? 'draft';
 
         return $this->workflowRepository->createPurchaseOrder($orderData, $items);
@@ -45,6 +47,7 @@ class PurchaseWorkflowService
 
     public function createPoRequest(array $poRequestData): int
     {
+        $poRequestData['request_no'] = $poRequestData['request_no'] ?? $this->generateReference('POR');
         $poRequestData['status'] = $poRequestData['status'] ?? 'pending';
         $poRequestData['requested_at'] = $poRequestData['requested_at'] ?? date('Y-m-d H:i:s');
 
@@ -53,6 +56,7 @@ class PurchaseWorkflowService
 
     public function convertReceiving(array $receivingData, array $receivingItems): int
     {
+        $receivingData['receiving_no'] = $receivingData['receiving_no'] ?? $this->generateReference('RCV');
         $receivingData['status'] = $receivingData['status'] ?? 'posted';
         $receivingData['received_at'] = $receivingData['received_at'] ?? date('Y-m-d H:i:s');
 
@@ -74,6 +78,7 @@ class PurchaseWorkflowService
 
     public function issueInventory(array $issuanceData, array $issuanceItems): int
     {
+        $issuanceData['issuance_no'] = $issuanceData['issuance_no'] ?? $this->generateReference('ISS');
         $issuanceData['status'] = $issuanceData['status'] ?? 'posted';
         $issuanceData['issued_at'] = $issuanceData['issued_at'] ?? date('Y-m-d H:i:s');
 
@@ -91,5 +96,10 @@ class PurchaseWorkflowService
         }
 
         return $issuanceId;
+    }
+
+    private function generateReference(string $prefix): string
+    {
+        return sprintf('%s-%s-%04d', $prefix, date('YmdHis'), random_int(1, 9999));
     }
 }
