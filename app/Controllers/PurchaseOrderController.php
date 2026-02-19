@@ -115,15 +115,4 @@ class PurchaseOrderController extends BaseController
             return redirect()->to('/purchase-orders')->with('error', $exception->getMessage());
         }
     }
-
-    private function decodeItems(string $itemsJson): array
-    {
-        $items = json_decode($itemsJson, true);
-
-        if (! is_array($items) || $items === []) {
-            throw new \InvalidArgumentException('Items JSON must be a non-empty array.');
-        }
-
-        return array_values(array_filter($items, static fn ($item): bool => is_array($item)));
-    }
 }

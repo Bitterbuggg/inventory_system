@@ -42,4 +42,26 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
     }
+
+    /**
+     * Decode and validate JSON items from form submission
+     * 
+     * @param string $itemsJson JSON string containing array of items
+     * @return array Validated items array
+     * @throws InvalidArgumentException If JSON is malformed or invalid
+     */
+    protected function decodeItems(string $itemsJson): array
+    {
+        try {
+            $items = json_decode($itemsJson, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException('Invalid JSON items format: ' . $e->getMessage());
+        }
+
+        if (!is_array($items) || empty($items)) {
+            throw new \InvalidArgumentException('Items JSON must be a non-empty array.');
+        }
+
+        return array_values(array_filter($items, static fn ($item): bool => is_array($item)));
+    }
 }
