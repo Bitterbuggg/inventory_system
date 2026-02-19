@@ -20,7 +20,7 @@ final class AuthRoutesTest extends CIUnitTestCase
         $result = $this->get('/signup');
 
         $result->assertStatus(200);
-        $result->assertSee('Signup');
+        $result->assertSee('Create Account');
     }
 
     public function testDashboardRequiresAuthentication(): void

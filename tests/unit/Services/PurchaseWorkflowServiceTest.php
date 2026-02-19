@@ -67,11 +67,34 @@ class FakeWorkflowRepository implements PurchaseWorkflowRepositoryInterface
 {
     public array $lastPurchaseRequestData = [];
 
+    public function paginatePurchaseRequests(int $page, int $perPage): array
+    {
+        return [
+            'rows' => [],
+            'pager' => null,
+        ];
+    }
+
+    public function findPurchaseRequestById(int $purchaseRequestId): ?array
+    {
+        return null;
+    }
+
     public function createPurchaseRequest(array $requestData, array $items): int
     {
         $this->lastPurchaseRequestData = $requestData;
 
         return 101;
+    }
+
+    public function updatePurchaseRequest(int $purchaseRequestId, array $requestData, array $items): bool
+    {
+        return true;
+    }
+
+    public function deletePurchaseRequest(int $purchaseRequestId): bool
+    {
+        return true;
     }
 
     public function updatePurchaseRequestStatus(int $purchaseRequestId, string $status): bool
@@ -87,6 +110,29 @@ class FakeWorkflowRepository implements PurchaseWorkflowRepositoryInterface
     public function createPurchaseOrder(array $orderData, array $items): int
     {
         return 301;
+    }
+
+    public function paginatePurchaseOrders(int $page, int $perPage): array
+    {
+        return [
+            'rows' => [],
+            'pager' => null,
+        ];
+    }
+
+    public function findPurchaseOrderById(int $purchaseOrderId): ?array
+    {
+        return null;
+    }
+
+    public function updatePurchaseOrder(int $purchaseOrderId, array $orderData, array $items): bool
+    {
+        return true;
+    }
+
+    public function deletePurchaseOrder(int $purchaseOrderId): bool
+    {
+        return true;
     }
 
     public function createPoRequest(array $poRequestData): int

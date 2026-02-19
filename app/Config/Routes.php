@@ -48,4 +48,24 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 		$routes->get('issuance', 'WorkflowController::issuanceForm');
 		$routes->post('issuance', 'WorkflowController::createIssuance');
 	});
+
+	$routes->group('purchase-requests', ['filter' => 'role:Admin,Employee'], static function (RouteCollection $routes): void {
+		$routes->get('/', 'PurchaseRequestController::index');
+		$routes->get('create', 'PurchaseRequestController::create');
+		$routes->post('/', 'PurchaseRequestController::store');
+		$routes->get('(:num)', 'PurchaseRequestController::show/$1');
+		$routes->get('(:num)/edit', 'PurchaseRequestController::edit/$1');
+		$routes->post('(:num)', 'PurchaseRequestController::update/$1');
+		$routes->post('(:num)/delete', 'PurchaseRequestController::delete/$1');
+	});
+
+	$routes->group('purchase-orders', ['filter' => 'role:Admin,Employee'], static function (RouteCollection $routes): void {
+		$routes->get('/', 'PurchaseOrderController::index');
+		$routes->get('create', 'PurchaseOrderController::create');
+		$routes->post('/', 'PurchaseOrderController::store');
+		$routes->get('(:num)', 'PurchaseOrderController::show/$1');
+		$routes->get('(:num)/edit', 'PurchaseOrderController::edit/$1');
+		$routes->post('(:num)', 'PurchaseOrderController::update/$1');
+		$routes->post('(:num)/delete', 'PurchaseOrderController::delete/$1');
+	});
 });

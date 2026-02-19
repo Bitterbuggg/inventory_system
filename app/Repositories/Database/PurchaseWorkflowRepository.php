@@ -32,6 +32,41 @@ class PurchaseWorkflowRepository implements PurchaseWorkflowRepositoryInterface
     ) {
     }
 
+    public function paginatePurchaseRequests(int $page, int $perPage): array
+    {
+        $rows = $this->purchaseRequestModel
+            ->select('purchase_requests.*, users.full_name AS requested_by_name')
+            ->join('users', 'users.id = purchase_requests.requested_by', 'left')
+            ->orderBy('purchase_requests.id', 'DESC')
+            ->paginate($perPage, 'purchase_requests', $page);
+
+        return [
+            'rows' => $rows,
+            'pager' => $this->purchaseRequestModel->pager,
+        ];
+    }
+
+    public function findPurchaseRequestById(int $purchaseRequestId): ?array
+    {
+        $purchaseRequest = $this->purchaseRequestModel
+            ->select('purchase_requests.*, users.full_name AS requested_by_name')
+            ->join('users', 'users.id = purchase_requests.requested_by', 'left')
+            ->where('purchase_requests.id', $purchaseRequestId)
+            ->first();
+
+        if ($purchaseRequest === null) {
+            return null;
+        }
+
+        $purchaseRequest['items'] = $this->purchaseRequestItemModel
+            ->select('purchase_request_items.*, products.sku, products.brand_name, products.generic_name')
+            ->join('products', 'products.id = purchase_request_items.product_id', 'left')
+            ->where('purchase_request_id', $purchaseRequestId)
+            ->findAll();
+
+        return $purchaseRequest;
+    }
+
     public function createPurchaseRequest(array $requestData, array $items): int
     {
         $this->db->transBegin();
@@ -56,6 +91,44 @@ class PurchaseWorkflowRepository implements PurchaseWorkflowRepositoryInterface
         return $purchaseRequestId;
     }
 
+    public function updatePurchaseRequest(int $purchaseRequestId, array $requestData, array $items): bool
+    {
+        $this->db->transBegin();
+
+        $this->purchaseRequestModel->update($purchaseRequestId, $requestData);
+
+        $this->purchaseRequestItemModel
+            ->where('purchase_request_id', $purchaseRequestId)
+            ->delete();
+
+        $rowItems = array_map(static fn (array $item): array => [
+            'purchase_request_id' => $purchaseRequestId,
+            'product_id'          => $item['product_id'],
+            'requested_qty'       => $item['requested_qty'],
+            'approved_qty'        => $item['approved_qty'] ?? null,
+            'unit_cost_estimate'  => $item['unit_cost_estimate'] ?? 0,
+            'remarks'             => $item['remarks'] ?? null,
+        ], $items);
+
+        if ($rowItems !== []) {
+            $this->purchaseRequestItemModel->insertBatch($rowItems);
+        }
+
+        $this->db->transCommit();
+
+        return true;
+    }
+
+    public function deletePurchaseRequest(int $purchaseRequestId): bool
+    {
+        $this->db->transBegin();
+        $this->purchaseRequestItemModel->where('purchase_request_id', $purchaseRequestId)->delete();
+        $this->purchaseRequestModel->delete($purchaseRequestId);
+        $this->db->transCommit();
+
+        return true;
+    }
+
     public function updatePurchaseRequestStatus(int $purchaseRequestId, string $status): bool
     {
         return (bool) $this->purchaseRequestModel->update($purchaseRequestId, ['status' => $status]);
@@ -66,6 +139,43 @@ class PurchaseWorkflowRepository implements PurchaseWorkflowRepositoryInterface
         $this->approvalModel->insert($approvalData);
 
         return (int) $this->approvalModel->getInsertID();
+    }
+
+    public function paginatePurchaseOrders(int $page, int $perPage): array
+    {
+        $rows = $this->purchaseOrderModel
+            ->select('purchase_orders.*, suppliers.name AS supplier_name, users.full_name AS created_by_name')
+            ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id', 'left')
+            ->join('users', 'users.id = purchase_orders.created_by', 'left')
+            ->orderBy('purchase_orders.id', 'DESC')
+            ->paginate($perPage, 'purchase_orders', $page);
+
+        return [
+            'rows' => $rows,
+            'pager' => $this->purchaseOrderModel->pager,
+        ];
+    }
+
+    public function findPurchaseOrderById(int $purchaseOrderId): ?array
+    {
+        $purchaseOrder = $this->purchaseOrderModel
+            ->select('purchase_orders.*, suppliers.name AS supplier_name, users.full_name AS created_by_name')
+            ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id', 'left')
+            ->join('users', 'users.id = purchase_orders.created_by', 'left')
+            ->where('purchase_orders.id', $purchaseOrderId)
+            ->first();
+
+        if ($purchaseOrder === null) {
+            return null;
+        }
+
+        $purchaseOrder['items'] = $this->purchaseOrderItemModel
+            ->select('purchase_order_items.*, products.sku, products.brand_name, products.generic_name')
+            ->join('products', 'products.id = purchase_order_items.product_id', 'left')
+            ->where('purchase_order_id', $purchaseOrderId)
+            ->findAll();
+
+        return $purchaseOrder;
     }
 
     public function createPurchaseOrder(array $orderData, array $items): int
@@ -90,6 +200,44 @@ class PurchaseWorkflowRepository implements PurchaseWorkflowRepositoryInterface
         $this->db->transCommit();
 
         return $purchaseOrderId;
+    }
+
+    public function updatePurchaseOrder(int $purchaseOrderId, array $orderData, array $items): bool
+    {
+        $this->db->transBegin();
+
+        $this->purchaseOrderModel->update($purchaseOrderId, $orderData);
+
+        $this->purchaseOrderItemModel
+            ->where('purchase_order_id', $purchaseOrderId)
+            ->delete();
+
+        $rowItems = array_map(static fn (array $item): array => [
+            'purchase_order_id' => $purchaseOrderId,
+            'product_id'        => $item['product_id'],
+            'quantity'          => $item['quantity'],
+            'received_qty'      => $item['received_qty'] ?? 0,
+            'unit_cost'         => $item['unit_cost'],
+            'line_total'        => $item['line_total'],
+        ], $items);
+
+        if ($rowItems !== []) {
+            $this->purchaseOrderItemModel->insertBatch($rowItems);
+        }
+
+        $this->db->transCommit();
+
+        return true;
+    }
+
+    public function deletePurchaseOrder(int $purchaseOrderId): bool
+    {
+        $this->db->transBegin();
+        $this->purchaseOrderItemModel->where('purchase_order_id', $purchaseOrderId)->delete();
+        $this->purchaseOrderModel->delete($purchaseOrderId);
+        $this->db->transCommit();
+
+        return true;
     }
 
     public function createPoRequest(array $poRequestData): int

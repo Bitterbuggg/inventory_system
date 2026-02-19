@@ -13,6 +13,16 @@ class PurchaseWorkflowService
     ) {
     }
 
+    public function paginatePurchaseRequests(int $page = 1, int $perPage = 10): array
+    {
+        return $this->workflowRepository->paginatePurchaseRequests($page, $perPage);
+    }
+
+    public function getPurchaseRequest(int $purchaseRequestId): ?array
+    {
+        return $this->workflowRepository->findPurchaseRequestById($purchaseRequestId);
+    }
+
     public function createPurchaseRequest(array $requestData, array $items): int
     {
         $requestData['request_no'] = $requestData['request_no'] ?? $this->generateReference('PR');
@@ -20,6 +30,18 @@ class PurchaseWorkflowService
         $requestData['requested_at'] = $requestData['requested_at'] ?? date('Y-m-d H:i:s');
 
         return $this->workflowRepository->createPurchaseRequest($requestData, $items);
+    }
+
+    public function updatePurchaseRequest(int $purchaseRequestId, array $requestData, array $items): bool
+    {
+        $requestData['requested_at'] = $requestData['requested_at'] ?? date('Y-m-d H:i:s');
+
+        return $this->workflowRepository->updatePurchaseRequest($purchaseRequestId, $requestData, $items);
+    }
+
+    public function deletePurchaseRequest(int $purchaseRequestId): bool
+    {
+        return $this->workflowRepository->deletePurchaseRequest($purchaseRequestId);
     }
 
     public function approvePurchaseRequest(int $purchaseRequestId, int $approverId, string $remarks = ''): int
@@ -43,6 +65,28 @@ class PurchaseWorkflowService
         $orderData['status'] = $orderData['status'] ?? 'draft';
 
         return $this->workflowRepository->createPurchaseOrder($orderData, $items);
+    }
+
+    public function paginatePurchaseOrders(int $page = 1, int $perPage = 10): array
+    {
+        return $this->workflowRepository->paginatePurchaseOrders($page, $perPage);
+    }
+
+    public function getPurchaseOrder(int $purchaseOrderId): ?array
+    {
+        return $this->workflowRepository->findPurchaseOrderById($purchaseOrderId);
+    }
+
+    public function updatePurchaseOrder(int $purchaseOrderId, array $orderData, array $items): bool
+    {
+        $orderData['status'] = $orderData['status'] ?? 'draft';
+
+        return $this->workflowRepository->updatePurchaseOrder($purchaseOrderId, $orderData, $items);
+    }
+
+    public function deletePurchaseOrder(int $purchaseOrderId): bool
+    {
+        return $this->workflowRepository->deletePurchaseOrder($purchaseOrderId);
     }
 
     public function createPoRequest(array $poRequestData): int
