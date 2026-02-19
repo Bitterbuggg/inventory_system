@@ -47,8 +47,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">🔐 Password (Required)</label>
                     <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+                    <div class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded text-sm">
+                        <p class="font-semibold text-amber-900 mb-2">Password must contain:</p>
+                        <ul class="space-y-1 text-amber-800">
+                            <li>✓ Minimum 12 characters</li>
+                            <li>✓ At least one UPPERCASE letter (A-Z)</li>
+                            <li>✓ At least one lowercase letter (a-z)</li>
+                            <li>✓ At least one number (0-9)</li>
+                            <li>✓ At least one special character (@$!%*?&)</li>
+                        </ul>
+                        <p class="text-xs text-amber-700 mt-2">Example: <code class="bg-white px-1 rounded">MyPass123@Secure</code></p>
+                    </div>
                 </div>
 
                 <div class="form-group">

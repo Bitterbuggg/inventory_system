@@ -39,11 +39,14 @@
                 </p>
             </div>
 
+            <?php if (ENVIRONMENT === 'development'): ?>
             <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-slate-600">
-                <p class="font-semibold text-blue-900 mb-1">Demo Credentials:</p>
-                <p>Email: <code class="font-mono bg-white px-1 rounded">admin@pharmacy.local</code></p>
-                <p>Password: <code class="font-mono bg-white px-1 rounded">Admin@123</code></p>
+                <p class="font-semibold text-blue-900 mb-1">🧪 Demo Credentials (Development Only):</p>
+                <p><strong>Email:</strong> <code class="font-mono bg-white px-1 rounded">admin@pharmacy.local</code></p>
+                <p><strong>Password:</strong> <code class="font-mono bg-white px-1 rounded">Admin@123</code></p>
+                <p class="text-xs text-slate-500 mt-2"><em>Note: Demo credentials are only shown in development environment.</em></p>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

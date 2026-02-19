@@ -68,4 +68,9 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 		$routes->post('(:num)', 'PurchaseOrderController::update/$1');
 		$routes->post('(:num)/delete', 'PurchaseOrderController::delete/$1');
 	});
+
+	$routes->group('inventory', ['filter' => 'role:Admin,Employee'], static function (RouteCollection $routes): void {
+		$routes->get('/', 'InventoryController::index');
+		$routes->post('/', 'InventoryController::index');
+	});
 });
