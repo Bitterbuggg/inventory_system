@@ -16,8 +16,9 @@ class DashboardController extends BaseController
     public function index(): string
     {
         // Get inventory search results (same as InventoryController)
+
         $result = $this->searchService->search(
-            $this->request->getVar(),
+            request()->getVar(),
             20
         );
 

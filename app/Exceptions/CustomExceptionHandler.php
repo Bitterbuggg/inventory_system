@@ -166,7 +166,7 @@ class CustomExceptionHandler implements ExceptionHandlerInterface
         $userId = session()->get('auth_user.id') ?? 'anonymous';
         $ip     = $request?->getIPAddress() ?? 'unknown';
         $method = $request?->getMethod() ?? 'CLI';
-        $path   = $request?->getPath() ?? 'N/A';
+        $path   = method_exists($request, 'getUri') ? $request->getUri()->getPath() : 'N/A';
 
         $context = [
             'user_id'    => $userId,

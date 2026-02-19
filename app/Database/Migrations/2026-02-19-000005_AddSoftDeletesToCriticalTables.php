@@ -8,7 +8,14 @@ class AddSoftDeletesToCriticalTables extends Migration
 {
     private function fieldExists(string $field, string $table): bool
     {
-        return in_array($field, $this->db->getFieldNames($table));
+        // Use INFORMATION_SCHEMA to check if a field exists (MySQL/MariaDB)
+        $dbName = $this->db->getDatabase();
+        $query = $this->db->query(
+            "SELECT COUNT(*) AS count FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?",
+            [$dbName, $table, $field]
+        );
+        $row = $query->getRowArray();
+        return isset($row['count']) && $row['count'] > 0;
     }
 
     public function up()

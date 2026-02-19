@@ -48,16 +48,19 @@ class AuthController extends BaseController
     public function login(): RedirectResponse
     {
         // Rate limiting: Check if IP is locked out
-        $clientIp = $this->request->getIPAddress();
-        $lockoutKey = 'login_lockout_' . $clientIp;
-        $attemptsKey = 'login_attempts_' . $clientIp;
+
+        $clientIp = request()->getIPAddress();
+        // Sanitize IP for cache key (replace reserved chars with _)
+        $safeIp = preg_replace('/[{}()\/\\@:]/', '_', $clientIp);
+        $lockoutKey = 'login_lockout_' . $safeIp;
+        $attemptsKey = 'login_attempts_' . $safeIp;
 
         if (cache($lockoutKey)) {
             return redirect()->back()
                 ->with('error', '❌ Too many login attempts. Please try again in 15 minutes.');
         }
 
-        $credentials = $this->request->getPost(['email', 'password']);
+        $credentials = request()->getPost(['email', 'password']);
 
         $user = $this->authService->login($credentials['email'] ?? '', $credentials['password'] ?? '');
 
@@ -110,10 +113,10 @@ class AuthController extends BaseController
 
         try {
             $this->authService->register([
-                'full_name' => (string) $this->request->getPost('full_name'),
-                'email' => (string) $this->request->getPost('email'),
-                'password' => (string) $this->request->getPost('password'),
-                'role_name' => (string) $this->request->getPost('role_name'),
+                'full_name' => (string) request()->getPost('full_name'),
+                'email' => (string) request()->getPost('email'),
+                'password' => (string) request()->getPost('password'),
+                'role_name' => (string) request()->getPost('role_name'),
             ]);
         } catch (\Throwable $exception) {
             return redirect()->back()->withInput()->with('error', $exception->getMessage());
