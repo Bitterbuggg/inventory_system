@@ -37,7 +37,7 @@
                         </span>
                         <a href="<?= site_url('dashboard') ?>" class="nav-link">Dashboard</a>
                         <a href="<?= site_url('workflow') ?>" class="nav-link">Workflow</a>
-                        <a href="<?= site_url('inventory') ?>" class="nav-link">Inventory</a>
+                        <!-- <a href="<?= site_url('inventory') ?>" class="nav-link">Inventory</a> -->
                         <a href="<?= site_url('logout') ?>" class="btn btn-small btn-secondary">Logout</a>
                     <?php else: ?>
                         <a href="<?= site_url('login') ?>" class="btn btn-small btn-primary">Login</a>

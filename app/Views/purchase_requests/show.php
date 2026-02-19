@@ -56,17 +56,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (empty($record['items'])): ?>
-                        <tr><td colspan="4" class="text-center text-slate-600 py-4">No items</td></tr>
-                    <?php else: ?>
+                    <?php if (!empty($record['items']) && is_array($record['items'])): ?>
                         <?php foreach ($record['items'] as $item): ?>
                             <tr>
                                 <td class="text-sm"><?= esc(($item['sku'] ?? '') . ' - ' . ($item['brand_name'] ?? '')) ?></td>
-                                <td class="font-semibold"><?= esc($item['requested_qty']) ?></td>
+                                <td class="font-semibold"><?= esc($item['requested_qty'] ?? 0) ?></td>
                                 <td><?= esc($item['approved_qty'] ?? '-') ?></td>
                                 <td class="text-right">$<?= number_format($item['unit_cost_estimate'] ?? 0, 2) ?></td>
                             </tr>
                         <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-slate-600 py-4">No items</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

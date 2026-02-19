@@ -6,12 +6,17 @@ use CodeIgniter\Database\Migration;
 
 class AddSoftDeletesToCriticalTables extends Migration
 {
+    private function fieldExists(string $field, string $table): bool
+    {
+        return in_array($field, $this->db->getFieldNames($table));
+    }
+
     public function up()
     {
         // Add soft_delete support to transaction tables for audit trail and recovery
         
         // Purchase requests table
-        if (!$this->db->fieldExists('deleted_at', 'purchase_requests')) {
+        if (!$this->fieldExists('deleted_at', 'purchase_requests')) {
             $this->db->query("
                 ALTER TABLE purchase_requests 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -20,7 +25,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Purchase orders table
-        if (!$this->db->fieldExists('deleted_at', 'purchase_orders')) {
+        if (!$this->fieldExists('deleted_at', 'purchase_orders')) {
             $this->db->query("
                 ALTER TABLE purchase_orders 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -29,7 +34,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Receiving table
-        if (!$this->db->fieldExists('deleted_at', 'receivings')) {
+        if (!$this->fieldExists('deleted_at', 'receivings')) {
             $this->db->query("
                 ALTER TABLE receivings 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -38,7 +43,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Issuance table
-        if (!$this->db->fieldExists('deleted_at', 'issuances')) {
+        if (!$this->fieldExists('deleted_at', 'issuances')) {
             $this->db->query("
                 ALTER TABLE issuances 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -47,7 +52,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Receiving items table
-        if (!$this->db->fieldExists('deleted_at', 'receiving_items')) {
+        if (!$this->fieldExists('deleted_at', 'receiving_items')) {
             $this->db->query("
                 ALTER TABLE receiving_items 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER created_at,
@@ -56,7 +61,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Issuance items table
-        if (!$this->db->fieldExists('deleted_at', 'issuance_items')) {
+        if (!$this->fieldExists('deleted_at', 'issuance_items')) {
             $this->db->query("
                 ALTER TABLE issuance_items 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER created_at,
@@ -65,7 +70,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Purchase request items table
-        if (!$this->db->fieldExists('deleted_at', 'purchase_request_items')) {
+        if (!$this->fieldExists('deleted_at', 'purchase_request_items')) {
             $this->db->query("
                 ALTER TABLE purchase_request_items 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -74,7 +79,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         }
         
         // Purchase order items table
-        if (!$this->db->fieldExists('deleted_at', 'purchase_order_items')) {
+        if (!$this->fieldExists('deleted_at', 'purchase_order_items')) {
             $this->db->query("
                 ALTER TABLE purchase_order_items 
                 ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL AFTER updated_at,
@@ -100,7 +105,7 @@ class AddSoftDeletesToCriticalTables extends Migration
         ];
         
         foreach ($tables as $table) {
-            if ($this->db->fieldExists('deleted_at', $table)) {
+            if ($this->fieldExists('deleted_at', $table)) {
                 $this->db->query("ALTER TABLE {$table} DROP COLUMN deleted_at");
                 $this->db->query("ALTER TABLE {$table} DROP INDEX idx_deleted_at");
             }

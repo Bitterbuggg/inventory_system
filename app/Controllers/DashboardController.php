@@ -2,31 +2,25 @@
 
 namespace App\Controllers;
 
+use App\Services\InventorySearchService;
+
 class DashboardController extends BaseController
 {
+    private InventorySearchService $searchService;
+
+    public function __construct()
+    {
+        $this->searchService = new InventorySearchService();
+    }
+
     public function index(): string
     {
-        $user = session('auth_user');
+        // Get inventory search results (same as InventoryController)
+        $result = $this->searchService->search(
+            $this->request->getVar(),
+            20
+        );
 
-        return view('dashboard/index', [
-            'user' => $user,
-            'roleSections' => [
-                'Admin' => [
-                    'User Administration',
-                    'Approval Oversight',
-                    'Supplier Governance',
-                ],
-                'Employee' => [
-                    'Purchase Request',
-                    'Purchase Order & PO Request',
-                    'Receiving and Issuance',
-                ],
-                'IT Dev/Staff' => [
-                    'System Health',
-                    'Audit and Monitoring',
-                    'Data Maintenance',
-                ],
-            ],
-        ]);
+        return view('dashboard/index', array_merge(['title' => 'Inventory Management'], $result));
     }
 }

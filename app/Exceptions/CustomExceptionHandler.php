@@ -2,20 +2,30 @@
 
 namespace App\Exceptions;
 
-use CodeIgniter\Debug\ExceptionHandler;
-use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Debug\ExceptionHandlerInterface;
 use Throwable;
 
-class CustomExceptionHandler extends ExceptionHandler
+/**
+ * Custom Exception Handler
+ * 
+ * Note: We cannot extend ExceptionHandler directly as it's final in some CodeIgniter versions.
+ * Instead, we implement custom exception handling through the exception config.
+ */
+class CustomExceptionHandler implements ExceptionHandlerInterface
 {
     /**
      * Render the exception in a web format
      */
-    public function handle(Throwable $exception): void
+    public function handle(
+        Throwable $exception,
+        RequestInterface $request,
+        ResponseInterface $response,
+        int $statusCode,
+        int $exitCode
+    ): void
     {
-        $statusCode = $this->getCode($exception);
-        $request    = request();
-        
         // Log the exception with full context
         $this->logException($exception, $statusCode, $request);
 
@@ -25,14 +35,35 @@ class CustomExceptionHandler extends ExceptionHandler
             403 => $this->handle403($exception, $request),
             404 => $this->handle404($exception, $request),
             500 => $this->handle500($exception, $request),
-            default => parent::handle($exception),
+            default => $this->handleDefault($exception, $request),
         };
+    }
+
+    /**
+     * Handle default/unknown status codes
+     */
+    private function handleDefault(Throwable $exception, ?RequestInterface $request): void
+    {
+        $statusCode = $this->getCode($exception);
+        $this->setStatusCode($statusCode);
+
+        if ($this->isJSON($request)) {
+            echo json_encode([
+                'success' => false,
+                'message' => $exception->getMessage(),
+                'code'    => $statusCode,
+            ]);
+        } else {
+            echo view('errors/404', [
+                'message' => 'An unexpected error occurred.',
+            ]);
+        }
     }
 
     /**
      * Handle 401 Unauthorized
      */
-    private function handle401(Throwable $exception, ?Request $request): void
+    private function handle401(Throwable $exception, ?RequestInterface $request): void
     {
         $this->setStatusCode(401);
 
@@ -52,7 +83,7 @@ class CustomExceptionHandler extends ExceptionHandler
     /**
      * Handle 403 Forbidden
      */
-    private function handle403(Throwable $exception, ?Request $request): void
+    private function handle403(Throwable $exception, ?RequestInterface $request): void
     {
         $this->setStatusCode(403);
 
@@ -72,7 +103,7 @@ class CustomExceptionHandler extends ExceptionHandler
     /**
      * Handle 404 Not Found
      */
-    private function handle404(Throwable $exception, ?Request $request): void
+    private function handle404(Throwable $exception, ?RequestInterface $request): void
     {
         $this->setStatusCode(404);
 
@@ -92,7 +123,7 @@ class CustomExceptionHandler extends ExceptionHandler
     /**
      * Handle 500 Internal Server Error
      */
-    private function handle500(Throwable $exception, ?Request $request): void
+    private function handle500(Throwable $exception, ?RequestInterface $request): void
     {
         $this->setStatusCode(500);
 
@@ -130,9 +161,9 @@ class CustomExceptionHandler extends ExceptionHandler
     /**
      * Log exception with full context
      */
-    private function logException(Throwable $exception, int $statusCode, ?Request $request): void
+    private function logException(Throwable $exception, int $statusCode, ?RequestInterface $request): void
     {
-        $userId = auth_id() ?? 'anonymous';
+        $userId = session()->get('auth_user.id') ?? 'anonymous';
         $ip     = $request?->getIPAddress() ?? 'unknown';
         $method = $request?->getMethod() ?? 'CLI';
         $path   = $request?->getPath() ?? 'N/A';
@@ -157,7 +188,7 @@ class CustomExceptionHandler extends ExceptionHandler
     /**
      * Check if request expects JSON response
      */
-    private function isJSON(?Request $request): bool
+    private function isJSON(?RequestInterface $request): bool
     {
         if ($request === null) {
             return false;

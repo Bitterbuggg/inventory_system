@@ -117,7 +117,7 @@ class WorkflowController extends BaseController
         }
     }
 
-    private function decodeItems(string $itemsJson): array
+    protected function decodeItems(string $itemsJson): array
     {
         $decoded = json_decode($itemsJson, true);
 
