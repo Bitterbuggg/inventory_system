@@ -36,4 +36,16 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 		$routes->post('receivings/convert', 'PurchaseWorkflowController::convertReceiving');
 		$routes->post('issuances', 'PurchaseWorkflowController::issueInventory');
 	});
+
+	$routes->group('workflow', ['filter' => 'role:Admin,Employee'], static function (RouteCollection $routes): void {
+		$routes->get('/', 'WorkflowController::index');
+		$routes->get('purchase-request', 'WorkflowController::purchaseRequestForm');
+		$routes->post('purchase-request', 'WorkflowController::createPurchaseRequest');
+		$routes->get('purchase-order', 'WorkflowController::purchaseOrderForm');
+		$routes->post('purchase-order', 'WorkflowController::createPurchaseOrder');
+		$routes->get('receiving-convert', 'WorkflowController::receivingForm');
+		$routes->post('receiving-convert', 'WorkflowController::convertReceiving');
+		$routes->get('issuance', 'WorkflowController::issuanceForm');
+		$routes->post('issuance', 'WorkflowController::createIssuance');
+	});
 });

@@ -115,6 +115,14 @@ Authenticated role scope: `Admin`, `Employee`.
 - `POST /api/workflow/receivings/convert`
 - `POST /api/workflow/issuances`
 
+## Workflow Web Routes (Native Views)
+
+- `GET /workflow`
+- `GET|POST /workflow/purchase-request`
+- `GET|POST /workflow/purchase-order`
+- `GET|POST /workflow/receiving-convert`
+- `GET|POST /workflow/issuance`
+
 ## Optimization Plan (Early)
 
 - Indexed high-frequency columns (`status`, FK columns, workflow reference pairs)

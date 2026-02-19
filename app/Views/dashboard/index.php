@@ -17,5 +17,9 @@
     <?php endforeach; ?>
 </ul>
 
+<?php if (in_array(($user['role_name'] ?? ''), ['Admin', 'Employee'], true)): ?>
+    <p><a href="<?= site_url('workflow') ?>">Open Workflow Operations</a></p>
+<?php endif; ?>
+
 <p><a href="<?= site_url('logout') ?>">Logout</a></p>
 <?= $this->endSection() ?>
