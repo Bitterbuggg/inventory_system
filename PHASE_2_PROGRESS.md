@@ -184,28 +184,22 @@ Zero regressions after Phase 2 changes so far.
 
 ## 📋 REMAINING PHASE 2 TASKS
 
-### Priority 1: Exception Handling (IN NEXT BATCH)
-- [ ] Create global exception handler in `app/Config/Exceptions.php`
-- [ ] Implement proper HTTP response codes (400, 401, 403, 404, 500)
-- [ ] Add structured error logging with context
-- [ ] Create user-friendly error views
-
-### Priority 2: SQL Injection Risk Reduction
+### Priority 1: SQL Injection Risk Reduction
 - [ ] Audit all repository methods for dynamic SQL
 - [ ] Add parameter validation to search filters
 - [ ] Review and strengthen parameterized queries
 - [ ] Document prepared statement patterns
 
-### Priority 3: Exception Handler Integration
-- [ ] Wire up exception handler to all controllers
-- [ ] Implement structured error responses
-- [ ] Add request context to error logs
-
-### Priority 4: Final Testing & Verification
+### Priority 2: Final Testing & Verification
 - [ ] Run full test suite with coverage
 - [ ] Manual security testing of complex flows
 - [ ] Performance testing with concurrent operations
 - [ ] Audit logging verification
+
+### Priority 3: Exception Handler Integration
+- [ ] Wire up exception handler to all controllers
+- [ ] Implement structured error responses
+- [ ] Add request context to error logs
 
 ---
 
